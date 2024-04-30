@@ -69,7 +69,7 @@ class CachingLogic(IsolatedAsyncioTestCase):
         # running the same query, so number of inference calls should remain same
         # temporarily commenting this out because we no longer call infer_one
         assert aidb_engine._config.inference_services["objects00"].infer_one.calls == calls[index][0]
-        clear_ML_cache(aidb_engine)
+        asyncio_run(clear_ML_cache(aidb_engine))
         logger.info(f'Running uncached query {aidb_query} in aidb database')
         aidb_res = aidb_engine.execute(aidb_query)
         assert len(gt_res) == len(aidb_res)
