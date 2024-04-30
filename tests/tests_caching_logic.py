@@ -9,6 +9,8 @@ from aidb.utils.logger import logger
 from tests.inference_service_utils.inference_service_setup import register_inference_services
 from tests.inference_service_utils.http_inference_service_setup import run_server
 from tests.utils import setup_gt_and_aidb_engine, setup_test_logger
+from aidb.utils.asyncio import asyncio_run
+from aidb_utilities.db_setup.clear_cache import clear_ML_cache
 
 setup_test_logger('caching_logic')
 
@@ -47,7 +49,7 @@ class CachingLogic(IsolatedAsyncioTestCase):
       # no service calls before executing query
       assert aidb_engine._config.inference_services["objects00"].infer_one.calls == 0
   
-      calls = [20, 27]
+      calls = [[20, 40], [47, 74]]
       for index, (query_type, aidb_query, exact_query) in enumerate(queries):
         logger.info(f'Running query {exact_query} in ground truth database')
         # Run the query on the ground truth database
@@ -55,12 +57,25 @@ class CachingLogic(IsolatedAsyncioTestCase):
           gt_res = await conn.execute(text(exact_query))
           gt_res = gt_res.fetchall()
         # Run the query on the aidb database
-        logger.info(f'Running query {aidb_query} in aidb database')
+        logger.info(f'Running initial query {aidb_query} in aidb database')
         aidb_res = aidb_engine.execute(aidb_query)
         assert len(gt_res) == len(aidb_res)
         # running the same query, so number of inference calls should remain same
         # temporarily commenting this out because we no longer call infer_one
-        assert aidb_engine._config.inference_services["objects00"].infer_one.calls == calls[index]
+        assert aidb_engine._config.inference_services["objects00"].infer_one.calls == calls[index][0]
+        logger.info(f'Running cached query {aidb_query} in aidb database')
+        aidb_res = aidb_engine.execute(aidb_query)
+        assert len(gt_res) == len(aidb_res)
+        # running the same query, so number of inference calls should remain same
+        # temporarily commenting this out because we no longer call infer_one
+        assert aidb_engine._config.inference_services["objects00"].infer_one.calls == calls[index][0]
+        clear_ML_cache(aidb_engine)
+        logger.info(f'Running uncached query {aidb_query} in aidb database')
+        aidb_res = aidb_engine.execute(aidb_query)
+        assert len(gt_res) == len(aidb_res)
+        # running the same query, so number of inference calls should remain same
+        # temporarily commenting this out because we no longer call infer_one
+        assert aidb_engine._config.inference_services["objects00"].infer_one.calls == calls[index][0]
       del gt_engine
       del aidb_engine
     p.terminate()
