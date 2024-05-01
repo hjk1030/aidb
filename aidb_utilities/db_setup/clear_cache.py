@@ -13,5 +13,8 @@ async def clear_ML_cache(engine: Engine):
             async with service_binding._engine.begin() as conn:
                 stmt = delete(service_binding._cache_table)
                 await conn.execute(stmt)
+                for table_name, table in service_binding._tables:
+                    stmt = delete(table)
+                    await conn.execute(stmt)
         else:
             logger.debug(f"Service binding for {service_binding.service.name} is not cached")
