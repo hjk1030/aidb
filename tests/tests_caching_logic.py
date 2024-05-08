@@ -14,7 +14,6 @@ from tests.inference_service_utils.inference_service_setup import \
     register_inference_services
 from tests.utils import setup_gt_and_aidb_engine, setup_test_logger
 from aidb.utils.asyncio import asyncio_run
-from aidb_utilities.db_setup.clear_cache import clear_ML_cache
 
 setup_test_logger('caching_logic')
 
