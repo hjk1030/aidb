@@ -81,6 +81,7 @@ class CachingLogic(IsolatedAsyncioTestCase):
       del gt_engine
       del aidb_engine
     p.terminate()
+    p.join()
 
   async def test_only_one_service_deleted(self):
     '''
@@ -131,6 +132,7 @@ class CachingLogic(IsolatedAsyncioTestCase):
       del gt_engine
       del aidb_engine
     p.terminate()
+    p.join()
 
 if __name__ == '__main__':
   unittest.main()

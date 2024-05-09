@@ -12,8 +12,6 @@ from aidb.query.query import Query
 from aidb.utils.asyncio import asyncio_run
 from aidb.utils.logger import logger
 
-from typing import List
-
 
 class Engine(LimitEngine, NonSelectQueryEngine, ApproxSelectEngine, ApproximateAggregateJoinEngine):
   def execute(self, query: str, **kwargs):
