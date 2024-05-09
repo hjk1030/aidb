@@ -120,13 +120,13 @@ class CachingLogic(IsolatedAsyncioTestCase):
   
       # Get the initial call count since inference services may be called by other tests before
       # all the infer_one call use the same counter, so checking only one of them should be enough
-      initial_infer_one_calls = aidb_engine._config.inference_services["objects00"].infer_one.calls
+      initial_infer_one_calls = aidb_engine._config.inference_services["counts03"].infer_one.calls
 
       # May have cache before test so clear them
       aidb_engine.clear_ml_cache()
 
       calls = [[initial_infer_one_calls + 20, initial_infer_one_calls + 40], 
-               [initial_infer_one_calls + 47, initial_infer_one_calls + 74]]
+               [initial_infer_one_calls + 60, initial_infer_one_calls + 60]]
       # each query calls 20 inference.
       # For the first two queries, all the inference is needed.
       # The third query need to infer again but the fourth don't.
