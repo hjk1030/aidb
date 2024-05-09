@@ -12,6 +12,8 @@ from aidb.query.query import Query
 from aidb.utils.asyncio import asyncio_run
 from aidb.utils.logger import logger
 
+from typing import List
+
 
 class Engine(LimitEngine, NonSelectQueryEngine, ApproxSelectEngine, ApproximateAggregateJoinEngine):
   def execute(self, query: str, **kwargs):
@@ -50,7 +52,7 @@ class Engine(LimitEngine, NonSelectQueryEngine, ApproxSelectEngine, ApproximateA
     finally:
       self.__del__()
 
-  async def clear_ml_cache(self, service_name_list: list[str] | None = None):
+  async def clear_ml_cache(self, service_name_list: List[str] | None = None):
     '''
     Clear the cache and output table if the ML model has changed.
     For each cached inference service, build the reference graph of the tables based on fk constraints,
