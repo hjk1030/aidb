@@ -47,11 +47,12 @@ class CachingLogic(IsolatedAsyncioTestCase):
           '''SELECT * FROM objects00 WHERE object_name='car' AND frame < 400;'''
         ),
       ]
+
+      # Get the initial call count since inference services may be called by other tests before
+      initial_infer_one_calls = aidb_engine._config.inference_services["objects00"].infer_one.calls
   
-      # no service calls before executing query
-      assert aidb_engine._config.inference_services["objects00"].infer_one.calls == 0
-  
-      calls = [[20, 40], [47, 74]]
+      calls = [[initial_infer_one_calls + 20, initial_infer_one_calls + 40], 
+               [initial_infer_one_calls + 47, initial_infer_one_calls + 74]]
       # First 300 need 20 calls, 300 to 400 need 7 calls
       for index, (query_type, aidb_query, exact_query) in enumerate(queries):
         logger.info(f'Running query {exact_query} in ground truth database')
@@ -114,11 +115,12 @@ class CachingLogic(IsolatedAsyncioTestCase):
         ),
       ]
   
-      # no service calls before executing query
+      # Get the initial call count since inference services may be called by other tests before
       # all the infer_one call use the same counter, so checking only one of them should be enough
-      assert aidb_engine._config.inference_services["counts03"].infer_one.calls == 0
-      
-      calls = [[20, 40], [60, 60]]
+      initial_infer_one_calls = aidb_engine._config.inference_services["objects00"].infer_one.calls
+  
+      calls = [[initial_infer_one_calls + 20, initial_infer_one_calls + 40], 
+               [initial_infer_one_calls + 47, initial_infer_one_calls + 74]]
       # each query calls 20 inference.
       # For the first two queries, all the inference is needed.
       # The third query need to infer again but the fourth don't.
