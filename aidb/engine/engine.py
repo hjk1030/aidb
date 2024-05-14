@@ -70,6 +70,6 @@ class Engine(LimitEngine, NonSelectQueryEngine, ApproxSelectEngine, ApproximateA
               service_name_list.add(input_column.split('.')[0])
             asyncio_run(conn.execute(delete(bounded_service._cache_table)))
             for output_column in bounded_service.binding.output_columns:
-              asyncio_run(conn.execute(delete(bounded_service._tables[output_column.split('.')[0]])))
+              asyncio_run(conn.execute(delete(bounded_service._tables[output_column.split('.')[0]]._table)))
         else:
           logger.debug(f"Service binding for {bounded_service.service.name} is not cached")
